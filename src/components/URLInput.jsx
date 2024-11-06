@@ -14,6 +14,19 @@ export default function URLInput({ onSubmit, disabled, loading, progress }) {
     if (url) onSubmit(url, format)
   }
 
+  const connectWebSocket = () => {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = import.meta.env.VITE_API_URL.replace(/^https?:\/\//, '');
+    const ws = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setProgress(data);
+    };
+
+    return ws;
+  };
+
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">

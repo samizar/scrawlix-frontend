@@ -2,7 +2,9 @@ import { useEffect, useCallback } from 'react';
 
 export function useWebSocket(onProgress, onError) {
   useEffect(() => {
-    const ws = new WebSocket(`ws://${window.location.hostname}:3000`);
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = import.meta.env.VITE_API_URL.replace(/^https?:\/\//, '');
+    const ws = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
