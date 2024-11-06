@@ -98,7 +98,7 @@ function App() {
           </div>
           
           <a
-            href="https://www.buymeacoffee.com/YOUR_USERNAME"
+            href="https://www.buymeacoffee.com/azgsami"
             target="_blank"
             rel="noopener noreferrer"
             className="absolute right-0 top-0 hover:opacity-90 transition-opacity"
