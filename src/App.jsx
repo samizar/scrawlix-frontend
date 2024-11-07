@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import URLInput from './components/URLInput'
 import Controls from './components/Controls'
-import { useWebSocket } from './hooks/useWebSocket';
 import { getFilenameFromUrl } from './utils/filename';
+import FunProgress from './components/FunProgress';
 
 function App() {
   const [loading, setLoading] = useState(false)
@@ -17,16 +17,11 @@ function App() {
   const [progress, setProgress] = useState(null)
   const [error, setError] = useState(null)
 
-  useWebSocket(
-    (progressData) => setProgress(progressData),
-    (errorMessage) => setError(errorMessage)
-  );
-
   const handleSubmit = async (url, format) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const API_URL = import.meta.env.VITE_API_URL;
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const response = await fetch(`${API_URL}/api/generate`, {
         method: 'POST',
         headers: {
@@ -37,47 +32,44 @@ function App() {
           format,
           ...options
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Generation failed')
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Generation failed');
       }
 
+      const data = await (format === 'pdf' ? response.blob() : response.json());
+      
       if (format === 'pdf') {
-        // Handle PDF download
-        const blob = await response.blob()
-        const downloadUrl = window.URL.createObjectURL(blob)
-        const filename = getFilenameFromUrl(url)
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.download = `${filename}.pdf`
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        window.URL.revokeObjectURL(downloadUrl)
+        const downloadUrl = window.URL.createObjectURL(data);
+        const filename = url.replace(/[^a-zA-Z0-9]/g, '-');
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `${filename}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
       } else {
-        // Handle JSON response
-        const data = await response.json()
-        const jsonStr = JSON.stringify(data, null, 2)
-        const blob = new Blob([jsonStr], { type: 'application/json' })
-        const downloadUrl = window.URL.createObjectURL(blob)
-        const filename = getFilenameFromUrl(url)
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.download = `${filename}.json`
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        window.URL.revokeObjectURL(downloadUrl)
+        const jsonStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const filename = url.replace(/[^a-zA-Z0-9]/g, '-');
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `${filename}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
       }
     } catch (error) {
-      console.error('Error details:', error)
-      setError(error.message)
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -95,6 +87,7 @@ function App() {
             <p className="text-muted-foreground">
               Transform websites into beautiful documents with intelligent crawling
             </p>
+            {loading && <FunProgress />}
           </div>
           
           <a
