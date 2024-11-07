@@ -99,7 +99,7 @@ function App() {
             <img
               src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
               alt="Buy Me A Coffee"
-              className="h-10 w-auto pt-8"
+              className="h-10 p-2"
             />
           </a>
         </div>
