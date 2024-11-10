@@ -3,6 +3,7 @@ import URLInput from './components/URLInput'
 import Controls from './components/Controls'
 import { getFilenameFromUrl } from './utils/filename';
 import FunProgress from './components/FunProgress';
+import { Button } from "@/components/ui/button"  // Added this import
 
 function App() {
   const [loading, setLoading] = useState(false)
@@ -75,6 +76,20 @@ function App() {
     <div>
       <div className="container max-w-3xl mx-auto space-y-6">
         <div className="relative flex items-center justify-between mb-8">
+          {/* Added API Status Button */}
+          <div className="absolute left-0 top-0">
+            <Button
+              variant="outline"
+              className="bg-yellow-500/10 text-black hover:bg-yellow-500/20 border-yellow-500/20 translate-y-[6px] font-medium"
+              onClick={() => window.open('https://api.scrawlix.abuzarifa.com/', '_blank')}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                API Status
+              </div>
+            </Button>
+          </div>
+
           <div className="text-center flex-1 space-y-4">
             <img 
               src="/logo.svg" 
